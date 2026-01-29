@@ -1,196 +1,200 @@
 <p align="right">
-  <a href="./README.en.md">English</a>
+  <a href="./README.ko.md">한국어</a>
 </p>
 
 # nconv-cli (Notion Convertor CLI)
 
-> Notion 글을 블로그에 바로 올릴 수 있는 마크다운으로 변환하는 CLI  
-> (이미지 자동 추출 및 경로 정리 포함)
+> A CLI tool that converts Notion pages into blog-ready Markdown  
+> (with automatic image extraction and path normalization)
 
-Notion 퍼블릭 페이지를 마크다운으로 변환하고  
-이미지 파일을 로컬로 추출해 블로그 친화적인 구조로 정리해주는 CLI 도구입니다.
+nconv-cli converts public Notion pages into Markdown  
+and extracts images into local files, organizing everything  
+in a blog-friendly directory structure.
 
-## 특징
+## Features
 
-- 🚀 Notion 퍼블릭 페이지를 블로그용 마크다운으로 바로 변환
-- 🖼️ 이미지 파일을 로컬로 자동 다운로드 및 상대경로로 변환
-- 📁 게시글 단위로 정리된 출력 디렉토리 구조
-- 🎨 간단한 CLI 인터페이스
+- 🚀 Convert public Notion pages into blog-ready Markdown
+- 🖼️ Automatically download images and rewrite them as relative paths
+- 📁 Output organized by post-level directory structure
+- 🎨 Simple and intuitive CLI interface
 
+## Problems with Existing Notion → Markdown Workflows
 
+When moving content written in Notion to a blog,  
+simple copy & paste or the built-in Markdown export often causes issues.
 
-## 기존 Notion -> Markdown 변환의 문제점
+- **Copy & Paste**
+  - Text is converted into Markdown-like syntax
+  - Images remain linked to Notion CDN URLs
+  - Image access frequently breaks with `Access Denied` errors
 
-Notion에서 작성한 글을 블로그에 옮길 때,
-단순한 복사/붙여넣기나 기본 Markdown export는 포스팅에 불편함이 있습니다.
+- **Notion Markdown Export**
+  - Requires manual download and extraction of exported files
+  - Difficult to organize content by individual posts
 
-* 복사 & 붙여넣기 방식의 문제점
-  * 마크다운 식으로 텍스트는 변환되지만,
-  * 이미지는 Notion CDN URL로 유지되며
-  * Access Denied 로 이미지 접근이 깨지는 경우가 많습니다
+As a result, publishing to a blog usually involves  
+manually downloading images, renaming files, fixing paths,  
+and reorganizing directory structures.
 
-* Notion Markdown Export 방식의 문제점
-  * 직접 다운받아서 수동으로 저장 후 압축을 해제해야하며,
-  * 게시글 단위로 정리하기 어렵습니다
+| Method | Image Handling | Blog Usability |
+|------|---------------|----------------|
+| Copy & Paste | ❌ Dependent on Notion CDN | ❌ Broken images |
+| Notion Export | ⚠️ Manual organization required | ⚠️ Inconvenient |
+| **nconv-cli** | ✅ Local image extraction | ✅ Ready to publish |
 
-결과적으로 블로그에 게시하려면 이미지 개별 다운로드,
-파일명 및 경로 수정, 폴더 구조 재정리가 필요합니다.
+## Recommended For
 
-| 방식 | 이미지 관리 | 블로그 사용성 |
-|------|------------|---------------|
-| 복사 & 붙여넣기 | ❌ Notion CDN 의존 | ❌ 이미지 깨짐 |
-| Notion Export | ⚠️ 수동 정리 필요 | ⚠️ 번거로움 |
-| **nconv-cli** | ✅ 로컬 자동 추출 | ✅ 즉시 사용 가능 |
+- Developers who write in Notion and publish Markdown posts to  
+  Velog, Tistory, GitHub Pages, Hugo, or similar platforms
+- Anyone who has experienced broken images due to Notion CDN issues
+- Users looking to migrate Notion content into tools like Obsidian
 
-## 이런 분들에게 추천합니다
+## Environment
 
-- Notion으로 글을 쓰고, Velog / Tistory / GitHub Pages / Hugo 등의 플랫폼에 마크다운으로 포스팅을 하시는 분
-- Notion 이미지 CDN 문제로 글이 깨져본 경험이 있는 분
-- 노션 문서 체계를 옵시디언 등으로 마이그레이션하기 원하시는 분
+- **Node.js**: v20 or higher (npm v10 or higher)
+- **TypeScript**: v5 or higher
 
-
-## 환경
-- **Node.js**: v20 이상 (npm v10 이상)
-- **TypeScript**: v5 이상
-
-## 설치
+## Installation
 
 ```bash
-# 의존성 설치
+# Install dependencies
 npm install
 
-# 빌드
+# Build
 npm run build
 
-# 로컬에 CLI 설치
+# Install CLI locally
 npm link
-```
+````
 
-## 설정
+## Configuration
 
-`.env` 파일에 Notion 인증 토큰을 설정해야 합니다.
+Set your Notion authentication tokens in the `.env` file.
 
 ```bash
-# .env 파일 생성
+# Create .env file
 cp .env.example .env
 ```
 
-`.env` 파일을 열고 아래 값들을 설정하세요:
+Edit `.env` and set the following values:
 
 ```
 TOKEN_V2=your_token_v2_here
 FILE_TOKEN=your_file_token_here
 ```
 
-### Notion env 값 확인하는 방법
+### How to Find Notion Tokens
 
-1. [notion.so](https://notion.so)에 로그인
-2. 브라우저 개발자 도구 열기 (F12)
+1. Log in to [notion.so](https://notion.so)
+2. Open browser developer tools (F12)
 3. Application > Cookies > notion.so
-4. `token_v2` 값 복사 → `.env`의 `TOKEN_V2`에 붙여넣기
-5. `file_token` 값 복사 → `.env`의 `FILE_TOKEN`에 붙여넣기
+4. Copy `token_v2` → paste into `.env` as `TOKEN_V2`
+5. Copy `file_token` → paste into `.env` as `FILE_TOKEN`
 
-## 사용법
+## Usage
 
-### 기본 사용법
+### Basic Usage
 
 ```bash
 nconv md <notion-url>
 ```
 
-### 예시
+### Examples
 
 ```bash
-# 기본 사용 (./output 폴더에 저장)
+# Default output (saved to ./output)
 nconv md "https://notion.so/My-Page-abc123"
 
-# 출력 디렉토리 지정
+# Specify output directory
 nconv md "https://notion.so/My-Page-abc123" -o ./blog-posts
 
-# 커스텀 파일명
+# Custom filename
 nconv md "https://notion.so/My-Page-abc123" -f "my-article"
 
-# 상세 로그 출력
+# Verbose logging
 nconv md "https://notion.so/My-Page-abc123" -v
 
-# 모든 옵션 사용
+# All options
 nconv md "https://notion.so/My-Page-abc123" -o ./blog -i assets -f "article-1" -v
 ```
 
-## 옵션
+## Options
 
-| 옵션 | 단축 | 설명 | 기본값 |
-|------|------|------|--------|
-| `--output <dir>` | `-o` | 출력 디렉토리 | `./output` |
-| `--image-dir <dir>` | `-i` | 이미지 폴더명 (output 기준 상대경로) | `images` |
-| `--filename <name>` | `-f` | 출력 파일명 (확장자 제외 또는 포함) | URL에서 자동 추출 |
-| `--verbose` | `-v` | 상세 로그 출력 | `false` |
+| Option              | Short | Description                                 | Default            |
+| ------------------- | ----- | ------------------------------------------- | ------------------ |
+| `--output <dir>`    | `-o`  | Output directory                            | `./output`         |
+| `--image-dir <dir>` | `-i`  | Image directory (relative to output)        | `images`           |
+| `--filename <name>` | `-f`  | Output filename (with or without extension) | Extracted from URL |
+| `--verbose`         | `-v`  | Enable verbose logging                      | `false`            |
 
-## 출력 구조
+## Output Structure
 
-```
+```text
 output/
 ├── my-article-folder/
-    ├── my-article.md          # 마크다운 파일
-    └── images/
-        ├── abc12345.png       # 다운로드된 이미지들
-        ├── def67890.jpg
-        └── ...
+│   ├── my-article.md
+│   └── images/
+│       ├── abc12345.png
+│       ├── def67890.jpg
+│       └── ...
 ```
 
-마크다운 파일 내 이미지 경로는 상대경로로 변환됩니다:
+Image paths inside the Markdown file are converted to relative paths:
 
-```markdown
+```md
 ![image](./images/abc12345.png)
 ```
 
-## 라이브러리
-### 주요 라이브러리
-- **notion-exporter**: Notion 페이지를 마크다운으로 내보내는 라이브러리
-- **commander**: CLI 명령 정의 및 파싱 도구
-- **axios**: HTTP 클라이언트 (이미지 다운로드 등)
-- **dotenv**: 환경 변수 관리
-- **chalk**: 터미널 출력 색상화
-- **ora**: 터미널 스피너 (진행 상황 표시)
-- **slugify**: 문자열을 URL 슬러그로 변환
-- **uuid**: 고유 ID 생성
+## Libraries
 
-### 오픈소스 라이선스
-- **nconv-cli**: [ISC License](LICENSE)
-- 본 프로젝트는 위에 명시된 주요 라이브러리 외에도 다수의 오픈소스 라이브러리를 사용하며, 각 라이브러리는 해당 라이선스 정책을 따릅니다.
+### Main Libraries
 
-## 개발
+* **notion-exporter**: Export Notion pages to Markdown
+* **commander**: CLI command definition and parsing
+* **axios**: HTTP client (image downloads)
+* **dotenv**: Environment variable management
+* **chalk**: Terminal output styling
+* **ora**: Terminal spinner for progress display
+* **slugify**: Convert strings to URL-friendly slugs
+* **uuid**: Generate unique IDs
+
+### Open Source Licenses
+
+* **nconv-cli**: [ISC License](LICENSE)
+* This project uses multiple open source libraries,
+  each distributed under its respective license.
+
+## Development
 
 ```bash
-# 개발 모드 (파일 변경 감지)
+# Development mode (watch files)
 npm run dev
 
-# 빌드
+# Build
 npm run build
 
-# 로컬 테스트
+# Local testing
 npm link
 nconv md "https://notion.so/test-page"
 ```
 
-## 프로젝트 구조
+## Project Structure
 
-```
+```text
 nconv/
 ├── src/
-│   ├── index.ts              # CLI 진입점
-│   ├── config.ts             # 설정 관리
+│   ├── index.ts
+│   ├── config.ts
 │   ├── commands/
-│   │   └── md.ts             # md 명령어
+│   │   └── md.ts
 │   ├── core/
-│   │   ├── exporter.ts       # Notion 내보내기
-│   │   └── image-processor.ts # 이미지 처리
+│   │   ├── exporter.ts
+│   │   └── image-processor.ts
 │   └── utils/
-│       ├── file.ts           # 파일 유틸리티
-│       └── logger.ts         # 로깅
+│       ├── file.ts
+│       └── logger.ts
 ├── bin/
-│   └── nconv.js   # 실행 파일
+│   └── nconv.js
 ├── package.json
 ├── tsconfig.json
 └── tsup.config.ts
-```

@@ -1,7 +1,7 @@
 {
   "name": "nconv-cli",
   "version": "1.0.0",
-  "description": "Notion 페이지를 블로그용 마크다운으로 변환하는 CLI 도구",
+  "description": "A CLI tool that converts Notion pages into blog-ready Markdown (with automatic image extraction and path normalization)",
   "main": "dist/index.js",
   "type": "module",
   "bin": {
