@@ -10,19 +10,19 @@ import os from 'os';
  * md 명령어 핸들러
  */
 export async function mdCommand(notionUrl: string, options: ConverterOptions) {
-  const tempDir = path.join(os.tmpdir(), `notion-convertor-${Date.now()}`);
+  const tempDir = path.join(os.tmpdir(), `nconv-cli-${Date.now()}`);
 
   try {
     // 설정 생성
     const config = createConfig(options);
 
     if (config.verbose) {
-      logger.info('설정 로드 완료');
-      console.log(`  출력 디렉토리: ${config.output}\n`);
+      logger.info('Configuration loaded successfully');
+      console.log(`  Output directory: ${config.output}\n`);
     }
 
     // 1. Notion에서 마크다운과 이미지 가져오기
-    const spinner = logger.spinner('Notion 페이지를 가져오는 중...');
+    const spinner = logger.spinner('Fetching Notion page...');
 
     const exporter = new NotionMarkdownExporter({
       tokenV2: config.tokenV2,
@@ -32,9 +32,9 @@ export async function mdCommand(notionUrl: string, options: ConverterOptions) {
     let result;
     try {
       result = await exporter.exportWithImages(notionUrl, tempDir);
-      spinner.succeed(`Notion 페이지를 가져왔습니다 (이미지 ${result.imageFiles.length}개)`);
+      spinner.succeed(`Notion page fetched (${result.imageFiles.length} images)`);
     } catch (error) {
-      spinner.fail('Notion 페이지를 가져오는데 실패했습니다');
+      spinner.fail('Failed to fetch Notion page');
       throw error;
     }
 
@@ -60,7 +60,7 @@ export async function mdCommand(notionUrl: string, options: ConverterOptions) {
     await fs.mkdir(imageOutputDir, { recursive: true });
 
     if (config.verbose && result.imageFiles.length > 0) {
-      console.log(`이미지 파일 처리 중...\n`);
+      console.log(`Processing image files...\n`);
     }
 
     let processedMarkdown = result.markdown;
@@ -108,13 +108,13 @@ export async function mdCommand(notionUrl: string, options: ConverterOptions) {
 
     // 6. 결과 출력
     console.log('');
-    logger.success('변환 완료!');
+    logger.success('Conversion complete!');
     console.log('');
-    console.log(`📁 폴더: ${path.relative(process.cwd(), pageDir)}`);
-    console.log(`📄 마크다운: ${filename}`);
+    console.log(`📁 Folder: ${path.relative(process.cwd(), pageDir)}`);
+    console.log(`📄 Markdown: ${filename}`);
 
     if (result.imageFiles.length > 0) {
-      console.log(`🖼️  이미지: ${config.imageDir}/ (${result.imageFiles.length}개)`);
+      console.log(`🖼️  Images: ${config.imageDir}/ (${result.imageFiles.length} files)`);
     }
 
     console.log('');
@@ -123,7 +123,7 @@ export async function mdCommand(notionUrl: string, options: ConverterOptions) {
     if (error instanceof Error) {
       logger.error(error.message);
     } else {
-      logger.error('알 수 없는 오류가 발생했습니다.');
+      logger.error('An unknown error occurred.');
     }
     process.exit(1);
   } finally {

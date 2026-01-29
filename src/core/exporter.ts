@@ -35,7 +35,7 @@ export class NotionMarkdownExporter {
       // 마크다운 파일 찾기
       const mdFile = files.find(f => f.isFile() && f.name.endsWith('.md'));
       if (!mdFile) {
-        throw new Error('마크다운 파일을 찾을 수 없습니다.');
+        throw new Error('Markdown file not found.');
       }
 
       // 마크다운 내용 읽기
@@ -67,9 +67,9 @@ export class NotionMarkdownExporter {
       return { markdown, imageFiles };
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error(`Notion 페이지를 가져올 수 없습니다: ${error.message}`);
+        throw new Error(`Failed to fetch Notion page: ${error.message}`);
       }
-      throw new Error('Notion 페이지를 가져올 수 없습니다.');
+      throw new Error('Failed to fetch Notion page.');
     }
   }
 }

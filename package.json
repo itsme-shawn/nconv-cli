@@ -1,11 +1,11 @@
 {
-  "name": "notion-convertor",
+  "name": "nconv-cli",
   "version": "1.0.0",
   "description": "Notion 페이지를 블로그용 마크다운으로 변환하는 CLI 도구",
   "main": "dist/index.js",
   "type": "module",
   "bin": {
-    "notion-convertor": "./bin/notion-convertor.js"
+    "nconv": "./bin/nconv.js"
   },
   "scripts": {
     "build": "tsup",
