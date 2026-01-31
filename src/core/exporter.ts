@@ -1,6 +1,7 @@
 import { NotionExporter } from 'notion-exporter';
 import { promises as fs } from 'fs';
 import path from 'path';
+import { mdToPdf } from 'md-to-pdf';
 import type { NotionConfig } from '../config.js';
 
 export interface ExportResult {
@@ -16,6 +17,17 @@ export interface HTMLExportResult {
 export interface PDFExportResult {
   pdfPath: string;
   filename: string;
+}
+
+export interface MarkdownPDFOptions {
+  format?: 'A4' | 'Letter';
+  margin?: {
+    top?: string;
+    right?: string;
+    bottom?: string;
+    left?: string;
+  };
+  stylesheet?: string | string[];
 }
 
 /**
@@ -141,36 +153,80 @@ export class NotionMarkdownExporter {
   }
 
   /**
-   * Notion URL에서 PDF 파일 가져오기
+   * Markdown을 PDF로 변환 (md-to-pdf 사용)
+   * GitHub 스타일의 깔끔한 PDF 생성
    */
-  async exportPDF(notionUrl: string, tempDir: string): Promise<PDFExportResult> {
+  async exportMarkdownToPDF(
+    markdownContent: string,
+    outputPath: string,
+    options: MarkdownPDFOptions = {}
+  ): Promise<void> {
     try {
-      // 임시 디렉토리 생성
-      await fs.mkdir(tempDir, { recursive: true });
+      const pdfOptions = {
+        content: markdownContent,
+        stylesheet: options.stylesheet || [
+          'https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown.min.css',
+        ],
+        body_class: 'markdown-body',
+        css: `
+          .markdown-body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+          }
 
-      // getMdFiles 대신 getZip을 사용하여 PDF 다운로드
-      const zip = await this.exporter.getZip(notionUrl);
+          @media (max-width: 767px) {
+            .markdown-body {
+              padding: 15px;
+            }
+          }
 
-      // ZIP에서 PDF 파일 찾기
-      const pdfEntry = zip.getEntries().find(entry => entry.entryName.endsWith('.pdf'));
+          /* 코드 블록 스타일 개선 */
+          .markdown-body pre {
+            background-color: #f6f8fa;
+            border-radius: 6px;
+            padding: 16px;
+            overflow: auto;
+          }
 
-      if (!pdfEntry) {
-        throw new Error('PDF file not found in export.');
-      }
+          .markdown-body code {
+            background-color: rgba(175, 184, 193, 0.2);
+            border-radius: 6px;
+            padding: 0.2em 0.4em;
+          }
 
-      // PDF 파일을 임시 디렉토리에 저장
-      const pdfPath = path.join(tempDir, pdfEntry.entryName);
-      await fs.writeFile(pdfPath, pdfEntry.getData());
-
-      return {
-        pdfPath,
-        filename: pdfEntry.entryName,
+          /* 이미지 스타일 */
+          .markdown-body img {
+            max-width: 100%;
+            height: auto;
+          }
+        `,
+        pdf_options: {
+          format: options.format || 'A4',
+          margin: options.margin || {
+            top: '20mm',
+            right: '20mm',
+            bottom: '20mm',
+            left: '20mm',
+          },
+          printBackground: true,
+        },
       };
+
+      const result = await mdToPdf(pdfOptions);
+
+      if (result.content) {
+        await fs.writeFile(outputPath, result.content);
+      } else {
+        throw new Error('PDF content is empty');
+      }
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error(`Failed to export PDF: ${error.message}`);
+        throw new Error(`Failed to convert Markdown to PDF: ${error.message}`);
       }
-      throw new Error('Failed to export PDF.');
+      throw new Error('Failed to convert Markdown to PDF.');
     }
   }
 }
