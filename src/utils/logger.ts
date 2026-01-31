@@ -2,35 +2,35 @@ import chalk from 'chalk';
 import ora, { Ora } from 'ora';
 
 /**
- * 성공 메시지 출력
+ * print success log
  */
 export function success(message: string): void {
   console.log(chalk.green('✓'), message);
 }
 
 /**
- * 에러 메시지 출력
+ * print error log
  */
 export function error(message: string): void {
   console.error(chalk.red('✗'), message);
 }
 
 /**
- * 정보 메시지 출력
+ * print info log
  */
 export function info(message: string): void {
   console.log(chalk.blue('ℹ'), message);
 }
 
 /**
- * 경고 메시지 출력
+ * print warn log
  */
 export function warn(message: string): void {
   console.log(chalk.yellow('⚠'), message);
 }
 
 /**
- * 스피너 생성
+ * print spinner
  */
 export function spinner(text: string): Ora {
   return ora(text).start();
