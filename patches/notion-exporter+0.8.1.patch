@@ -1,0 +1,32 @@
+diff --git a/node_modules/notion-exporter/dist/index.js b/node_modules/notion-exporter/dist/index.js
+index 26fec15..aa97e8c 100644
+--- a/node_modules/notion-exporter/dist/index.js
++++ b/node_modules/notion-exporter/dist/index.js
+@@ -111,7 +111,8 @@ var defaultConfig = {
+   timeZone: "UTC",
+   locale: "en",
+   collectionViewExportType: "all",
+-  pollInterval: 1e3
++  pollInterval: 1e3,
++  exportType: "markdown"
+ };
+ 
+ // src/NotionExporter.ts
+@@ -227,7 +228,7 @@ var NotionExporter = class {
+     return __async(this, null, function* () {
+       const id = validateUuid(blockIdFromUrl(idOrUrl));
+       if (!id) return Promise.reject(`Invalid URL or blockId: ${idOrUrl}`);
+-      const _a = this.config, { recursive, pollInterval } = _a, config = __objRest(_a, ["recursive", "pollInterval"]);
++      const _a = this.config, { recursive, pollInterval, exportType } = _a, config = __objRest(_a, ["recursive", "pollInterval", "exportType"]);
+       const res = yield this.client.post("enqueueTask", {
+         task: {
+           eventName: "exportBlock",
+@@ -237,7 +238,7 @@ var NotionExporter = class {
+             recursive: !!recursive,
+             shouldExportComments: false,
+             exportOptions: __spreadValues({
+-              exportType: "markdown"
++              exportType: exportType || "markdown"
+             }, config)
+           }
+         }
