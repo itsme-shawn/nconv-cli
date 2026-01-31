@@ -7,13 +7,20 @@ import { pdfCommand } from './commands/pdf.js';
 import { debugCommand } from './commands/debug.js';
 import { handler as initHandler } from './commands/init.js';
 import { startRepl } from './repl/index.js';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const pkg = JSON.parse(readFileSync(join(__dirname, '../package.json'), 'utf-8'));
 
 const program = new Command();
 
 program
   .name('nconv')
   .description('CLI tool for converting Notion pages to blog-ready markdown')
-  .version('1.0.0');
+  .version(pkg.version);
 
 program
   .command('init')

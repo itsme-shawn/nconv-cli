@@ -9,7 +9,11 @@
 
 # 🚀 nconv-cli (Notion Converter CLI)
 
-> **Faster Workflow**: Automatically convert Notion pages into Markdown, HTML, and PDF.
+[![npm version](https://img.shields.io/npm/v/nconv-cli.svg)](https://www.npmjs.com/package/nconv-cli)
+[![npm downloads](https://img.shields.io/npm/dt/nconv-cli.svg)](https://www.npmjs.com/package/nconv-cli)
+[![license](https://img.shields.io/npm/l/nconv-cli.svg)](https://github.com/itsme-shawn/nconv-cli/blob/master/LICENSE)
+
+> **Faster Workflow**: A CLI tool that automatically convert Notion pages into Markdown, HTML, and PDF.
 > Stop wasting time unzipping files and fixing broken image paths manually.
 
 
@@ -184,7 +188,11 @@ npm run dev
 
 # 🚀 nconv-cli (Notion Converter CLI)
 
-> 노션 페이지를 CLI 도구를 통해 Markdown, HTML, PDF로 자동 변환합니다.
+[![npm version](https://img.shields.io/npm/v/nconv-cli.svg)](https://www.npmjs.com/package/nconv-cli)
+[![npm downloads](https://img.shields.io/npm/dt/nconv-cli.svg)](https://www.npmjs.com/package/nconv-cli)
+[![license](https://img.shields.io/npm/l/nconv-cli.svg)](https://github.com/itsme-shawn/nconv-cli/blob/master/LICENSE)
+
+> CLI 도구로 노션 페이지를  Markdown, HTML, PDF로 자동 변환합니다.
 > 수동으로 압축을 풀거나 깨진 이미지 경로를 수정하는 시간을 단축해줍니다.
 
 ---
@@ -256,7 +264,7 @@ for url in "${urls[@]}"; do nconv md "$url" -o ./dist; done
   * **HTML**: 빠른 웹 공유 및 스타일 확인용.
   * **PDF**: GitHub 스타일 CSS가 적용된 깔끔한 배포/아카이빙용 문서.
 
-* 🖼️ **지능형 이미지 처리**:
+* 🖼️ **이미지 추출 자동화**:
   * **Markdown/HTML**: 이미지를 로컬로 추출하고 문서 내 경로를 자동 업데이트합니다.
   * **PDF**: 모든 이미지를 **Base64**로 인코딩하여 단일 파일 내에 포함합니다 (리소스 유실 방지).
 * ✨ **수동 작업 최소화**: 파일명 변경이나 깨진 이미지 경로 수정 등 반복적인 작업이 필요 없습니다.
