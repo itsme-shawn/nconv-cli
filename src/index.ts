@@ -2,6 +2,7 @@
 
 import { Command } from 'commander';
 import { mdCommand } from './commands/md.js';
+import { htmlCommand } from './commands/html.js';
 import { debugCommand } from './commands/debug.js';
 import { handler as initHandler } from './commands/init.js';
 import { startRepl } from './repl/index.js';
@@ -29,6 +30,22 @@ program
   .option('-v, --verbose', 'Enable verbose logging', false)
   .action(async (url: string, options) => {
     await mdCommand(url, {
+      output: options.output,
+      imageDir: options.imageDir,
+      filename: options.filename,
+      verbose: options.verbose,
+    });
+  });
+
+program
+  .command('html <url>')
+  .description('Convert a Notion page to HTML')
+  .option('-o, --output <dir>', 'Output directory', './nconv-output')
+  .option('-i, --image-dir <dir>', 'Image folder name (relative to output)', 'images')
+  .option('-f, --filename <name>', 'Output filename (without extension or with)')
+  .option('-v, --verbose', 'Enable verbose logging', false)
+  .action(async (url: string, options) => {
+    await htmlCommand(url, {
       output: options.output,
       imageDir: options.imageDir,
       filename: options.filename,
