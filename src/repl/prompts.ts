@@ -7,6 +7,7 @@ import * as logger from '../utils/logger.js';
 export interface TokenConfig {
   TOKEN_V2: string;
   FILE_TOKEN: string;
+  OUTPUT_DIR?: string;
 }
 
 function getConfigPath(): string {
@@ -38,6 +39,7 @@ export function loadConfig(): TokenConfig | null {
 
     if (key === 'TOKEN_V2') config.TOKEN_V2 = value;
     if (key === 'FILE_TOKEN') config.FILE_TOKEN = value;
+    if (key === 'OUTPUT_DIR') config.OUTPUT_DIR = value;
   });
 
   return config;
@@ -56,6 +58,11 @@ export function saveConfig(config: TokenConfig): void {
 
 TOKEN_V2=${config.TOKEN_V2}
 FILE_TOKEN=${config.FILE_TOKEN}
+
+# Default output directory (optional)
+# If not set, defaults to ~/nconv-output
+# You can use ~ for home directory (e.g., ~/Documents/nconv-output)
+${config.OUTPUT_DIR ? `OUTPUT_DIR=${config.OUTPUT_DIR}` : '# OUTPUT_DIR=~/nconv-output'}
 `;
 
   try {
@@ -98,7 +105,16 @@ export async function promptInitConfig(): Promise<TokenConfig> {
     },
   });
 
-  return { TOKEN_V2, FILE_TOKEN };
+  const OUTPUT_DIR = await input({
+    message: 'OUTPUT_DIR (optional, press Enter for default ~/nconv-output):',
+    default: '',
+  });
+
+  return {
+    TOKEN_V2,
+    FILE_TOKEN,
+    ...(OUTPUT_DIR.trim() && { OUTPUT_DIR: OUTPUT_DIR.trim() }),
+  };
 }
 
 /**
@@ -119,5 +135,14 @@ export async function promptEditConfig(existing: TokenConfig): Promise<TokenConf
     required: true,
   });
 
-  return { TOKEN_V2, FILE_TOKEN };
+  const OUTPUT_DIR = await input({
+    message: 'OUTPUT_DIR (optional, leave empty for default ~/nconv-output):',
+    default: existing.OUTPUT_DIR || '',
+  });
+
+  return {
+    TOKEN_V2,
+    FILE_TOKEN,
+    ...(OUTPUT_DIR.trim() && { OUTPUT_DIR: OUTPUT_DIR.trim() }),
+  };
 }

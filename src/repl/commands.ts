@@ -3,13 +3,16 @@ import * as logger from '../utils/logger.js';
 import { mdCommand } from '../commands/md.js';
 import { htmlCommand } from '../commands/html.js';
 import { pdfCommand } from '../commands/pdf.js';
-import { validateConfig } from '../config.js';
+import { validateConfig, getDefaultOutputDir } from '../config.js';
 import {
   loadConfig,
   saveConfig,
   promptInitConfig,
   promptEditConfig,
 } from './prompts.js';
+
+// Get default output directory from config
+const defaultOutputDir = getDefaultOutputDir();
 
 /**
  * Handle /init command - Initialize configuration
@@ -75,7 +78,8 @@ export async function handleConfig(): Promise<void> {
 
   logger.info('Current configuration:');
   logger.info(`TOKEN_V2: ${existing.TOKEN_V2 ? '***' + existing.TOKEN_V2.slice(-8) : '(not set)'}`);
-  logger.info(`FILE_TOKEN: ${existing.FILE_TOKEN ? '***' + existing.FILE_TOKEN.slice(-8) : '(not set)'}\n`);
+  logger.info(`FILE_TOKEN: ${existing.FILE_TOKEN ? '***' + existing.FILE_TOKEN.slice(-8) : '(not set)'}`);
+  logger.info(`OUTPUT_DIR: ${existing.OUTPUT_DIR || '(default: ~/nconv-output)'}\n`);
 
   try {
     const edit = await input({
@@ -102,7 +106,7 @@ export async function handleConfig(): Promise<void> {
 export async function handleMd(args: string[]): Promise<void> {
   let url = '';
   const options: any = {
-    output: './nconv-output',
+    output: defaultOutputDir,
     imageDir: 'images',
     verbose: false,
   };
@@ -124,8 +128,8 @@ export async function handleMd(args: string[]): Promise<void> {
 
       // Step 2: Output directory
       const outputDir = await input({
-        message: 'Output directory [default: ./nconv-output]',
-        default: './nconv-output',
+        message: `Output directory [default: ${defaultOutputDir}]`,
+        default: defaultOutputDir,
       });
       options.output = outputDir;
 
@@ -186,7 +190,7 @@ export async function handleMd(args: string[]): Promise<void> {
 export async function handleHtml(args: string[]): Promise<void> {
   let url = '';
   const options: any = {
-    output: './nconv-output',
+    output: defaultOutputDir,
     imageDir: 'images',
     verbose: false,
   };
@@ -208,8 +212,8 @@ export async function handleHtml(args: string[]): Promise<void> {
 
       // Step 2: Output directory
       const outputDir = await input({
-        message: 'Output directory [default: ./nconv-output]',
-        default: './nconv-output',
+        message: `Output directory [default: ${defaultOutputDir}]`,
+        default: defaultOutputDir,
       });
       options.output = outputDir;
 
@@ -270,7 +274,7 @@ export async function handleHtml(args: string[]): Promise<void> {
 export async function handlePdf(args: string[]): Promise<void> {
   let url = '';
   const options: any = {
-    output: './nconv-output',
+    output: defaultOutputDir,
     imageDir: 'images',
     verbose: false,
   };
@@ -292,8 +296,8 @@ export async function handlePdf(args: string[]): Promise<void> {
 
       // Step 2: Output directory
       const outputDir = await input({
-        message: 'Output directory [default: ./nconv-output]',
-        default: './nconv-output',
+        message: `Output directory [default: ${defaultOutputDir}]`,
+        default: defaultOutputDir,
       });
       options.output = outputDir;
 
@@ -445,7 +449,7 @@ export function handleHelp(): void {
 
   console.log('');
   logger.info('Conversion options (for /md, /html, and /pdf):');
-  logger.info('  -o, --output <dir>      Output directory (default: ./nconv-output)');
+  logger.info(`  -o, --output <dir>      Output directory (default: ${defaultOutputDir})`);
   logger.info('  -i, --image-dir <dir>   Image folder name (default: images) [md/html only]');
   logger.info('  -f, --filename <name>   Output filename');
   logger.info('  -v, --verbose           Enable verbose logging\n');

@@ -1,6 +1,6 @@
 {
   "name": "nconv-cli",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A CLI tool that automatically convert Notion pages into Markdown, HTML, and PDF.",
   "main": "dist/index.js",
   "type": "module",

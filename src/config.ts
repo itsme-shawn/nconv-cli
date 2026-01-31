@@ -118,6 +118,25 @@ export function validateConfig(): { valid: boolean; message?: string } {
 }
 
 /**
+ * 기본 output 디렉토리 경로 가져오기
+ * .env의 OUTPUT_DIR을 사용하거나, 설정되지 않았으면 ~/nconv-output 사용
+ */
+export function getDefaultOutputDir(): string {
+  // 환경변수 로드
+  loadEnv();
+
+  const envOutputDir = process.env.OUTPUT_DIR;
+  if (envOutputDir) {
+    // 환경변수에 설정된 경로 사용 (~를 홈 디렉토리로 확장)
+    return envOutputDir.startsWith('~')
+      ? join(os.homedir(), envOutputDir.slice(1))
+      : envOutputDir;
+  }
+  // 기본값: 홈 디렉토리의 nconv-output
+  return join(os.homedir(), 'nconv-output');
+}
+
+/**
  * Notion 인증 설정 가져오기
  */
 export function getNotionConfig(): NotionConfig {

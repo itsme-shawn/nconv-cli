@@ -77,6 +77,30 @@ for url in "${urls[@]}"; do nconv md "$url" -o ./dist; done
 5.  Copy the value of the `token_v2` cookie and paste it into the `TOKEN_V2` field.
 6.  Copy the value of the `file_token` cookie and paste it into the `FILE_TOKEN` field.
 
+### Customize Output Directory (Optional)
+
+By default, files are saved to `~/nconv-output` (your home directory). To change this:
+
+**Method 1: Using REPL (Recommended)**
+```bash
+nconv
+nconv> /init    # During initial setup, you'll be prompted for OUTPUT_DIR
+# or
+nconv> /config  # Edit existing configuration including OUTPUT_DIR
+```
+
+**Method 2: Manual Edit**
+1. Edit the config file: `~/.nconv/.env`
+2. Add or modify the `OUTPUT_DIR` line:
+   ```bash
+   OUTPUT_DIR=~/Documents/my-blog-posts
+   # Or use an absolute path:
+   # OUTPUT_DIR=/path/to/your/output
+   ```
+3. The `~` symbol automatically expands to your home directory
+
+**Note**: You can still override this per-command using `-o` flag.
+
 ## 3. Core Features
 
 - ⚡️ **Faster Workflow**: Creates a ready-to-publish structure with automatic image downloads and relative path conversion.
@@ -255,6 +279,30 @@ for url in "${urls[@]}"; do nconv md "$url" -o ./dist; done
 4. "Cookies" 섹션에서 `https://www.notion.so`를 선택합니다.
 5. `token_v2` 쿠키 값을 복사하여 `TOKEN_V2` 필드에 붙여넣습니다.
 6. `file_token` 쿠키 값을 복사하여 `FILE_TOKEN` 필드에 붙여넣습니다.
+
+### 출력 디렉토리 변경 (선택사항)
+
+기본적으로 파일은 `~/nconv-output` (홈 디렉토리)에 저장됩니다. 이를 변경하려면:
+
+**방법 1: REPL 사용 (권장)**
+```bash
+nconv
+nconv> /init    # 초기 설정 시 OUTPUT_DIR 입력 프롬프트가 표시됩니다
+# 또는
+nconv> /config  # OUTPUT_DIR을 포함한 기존 설정을 수정합니다
+```
+
+**방법 2: 수동 편집**
+1. 설정 파일을 편집합니다: `~/.nconv/.env`
+2. `OUTPUT_DIR` 라인을 추가하거나 수정합니다:
+   ```bash
+   OUTPUT_DIR=~/Documents/my-blog-posts
+   # 또는 절대 경로 사용:
+   # OUTPUT_DIR=/path/to/your/output
+   ```
+3. `~` 기호는 자동으로 홈 디렉토리로 확장됩니다
+
+**참고**: `-o` 플래그를 사용하여 명령어별로 경로를 덮어쓸 수 있습니다.
 
 ## 3. 주요 특징
 

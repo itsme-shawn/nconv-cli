@@ -7,6 +7,7 @@ import { pdfCommand } from './commands/pdf.js';
 import { debugCommand } from './commands/debug.js';
 import { handler as initHandler } from './commands/init.js';
 import { startRepl } from './repl/index.js';
+import { getDefaultOutputDir } from './config.js';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -14,6 +15,9 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const pkg = JSON.parse(readFileSync(join(__dirname, '../package.json'), 'utf-8'));
+
+// Get default output directory from config
+const defaultOutputDir = getDefaultOutputDir();
 
 const program = new Command();
 
@@ -32,7 +36,7 @@ program
 program
   .command('md <url>')
   .description('Convert a Notion page to markdown')
-  .option('-o, --output <dir>', 'Output directory', './nconv-output')
+  .option('-o, --output <dir>', 'Output directory', defaultOutputDir)
   .option('-i, --image-dir <dir>', 'Image folder name (relative to output)', 'images')
   .option('-f, --filename <name>', '출력 파일명 (확장자 제외 또는 포함)')
   .option('-v, --verbose', 'Enable verbose logging', false)
@@ -48,7 +52,7 @@ program
 program
   .command('html <url>')
   .description('Convert a Notion page to HTML')
-  .option('-o, --output <dir>', 'Output directory', './nconv-output')
+  .option('-o, --output <dir>', 'Output directory', defaultOutputDir)
   .option('-i, --image-dir <dir>', 'Image folder name (relative to output)', 'images')
   .option('-f, --filename <name>', 'Output filename (without extension or with)')
   .option('-v, --verbose', 'Enable verbose logging', false)
@@ -64,7 +68,7 @@ program
 program
   .command('pdf <url>')
   .description('Convert a Notion page to PDF (renders actual Notion page)')
-  .option('-o, --output <dir>', 'Output directory', './nconv-output')
+  .option('-o, --output <dir>', 'Output directory', defaultOutputDir)
   .option('-f, --filename <name>', 'Output filename (without extension or with)')
   .option('-v, --verbose', 'Enable verbose logging', false)
   .action(async (url: string, options) => {
@@ -81,7 +85,7 @@ if (process.env.NODE_ENV !== 'production') {
   program
     .command('debug <url>')
     .description('Debug: Output raw markdown and image URLs')
-    .option('-o, --output <dir>', '출력 디렉토리', './nconv-output')
+    .option('-o, --output <dir>', '출력 디렉토리', defaultOutputDir)
     .option('-i, --image-dir <dir>', 'Image folder name', 'images')
     .option('-v, --verbose', 'Enable verbose logging', false)
     .action(async (url: string, options) => {
