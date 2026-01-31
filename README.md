@@ -16,7 +16,7 @@ in a blog-friendly directory structure.
 - 🚀 Convert public Notion pages into blog-ready Markdown
 - 🖼️ Automatically download images and rewrite them as relative paths
 - 📁 Output organized by post-level directory structure
-- 🎨 Simple and intuitive CLI interface
+- 💬 Provides both a slash-command–based interactive TUI (Claude Code–style) and a simple CLI interface.
 
 ## Problems with Existing Notion → Markdown Workflows
 
@@ -57,39 +57,143 @@ and reorganizing directory structures.
 ## Installation
 
 ```bash
-# Install dependencies
-npm install
+# Install the CLI globally
+npm install -g nconv-cli
+```
 
-# Build
-npm run build
+## TUI Interactive Mode
 
-# Install CLI locally
-npm link
-````
+**nconv** provides an interactive TUI (Text User Interface) for easier configuration and usage.
+
+### Starting TUI Interactive Mode
+
+Simply run `nconv` without any arguments:
+
+```bash
+nconv
+```
+
+You'll see a prompt where you can enter slash commands:
+
+```
+╔════════════════════════════════════╗
+║  NCONV CLI (Notion Converter CLI)  ║
+╚════════════════════════════════════╝
+
+ℹ Welcome to nconv interactive mode!
+ℹ Type /help to see available commands
+ℹ Type /exit to quit
+
+nconv>
+```
+
+### Available Slash Commands
+
+| Command | Description |
+|---------|-------------|
+| `/init` | Set up Notion tokens (interactive prompts) |
+| `/config` | View and edit current configuration |
+| `/md <url> [options]` | Convert Notion page to markdown |
+| `/help` | Show help information |
+| `/exit` | Exit interactive mode |
+
+### TUI Interactive Mode Examples
+
+```bash
+# Start interactive mode
+nconv
+
+# Initialize configuration (you'll be prompted for tokens)
+nconv> /init
+
+# View current configuration
+nconv> /config
+
+# Convert a Notion page
+nconv> /md https://notion.so/My-Page-abc123
+
+# Convert with options
+nconv> /md https://notion.so/My-Page-abc123 -o ./blog -f my-post
+
+# Exit
+nconv> /exit
+```
+
+## CLI Mode
+
+**nconv** also supports traditional CLI mode for scripting and automation.
+
+### CLI Commands
+
+```bash
+# Initialize configuration
+nconv init
+
+# Convert a Notion page (basic)
+nconv md <notion-url>
+
+# Convert with custom options
+nconv md <notion-url> [options]
+```
+
+### CLI Options
+
+| Option | Short | Description | Default |
+|--------|-------|-------------|---------|
+| `--output <dir>` | `-o` | Output directory | `./nconv-output` |
+| `--image-dir <dir>` | `-i` | Image folder name (relative to output) | `images` |
+| `--filename <name>` | `-f` | Output filename (with or without extension) | Extracted from URL |
+| `--verbose` | `-v` | Enable verbose logging | `false` |
+
+### CLI Examples
+
+```bash
+# Basic conversion
+nconv md "https://notion.so/My-Page-abc123"
+
+# Custom output directory
+nconv md "https://notion.so/My-Page-abc123" -o ./blog-posts
+
+# Custom filename
+nconv md "https://notion.so/My-Page-abc123" -f "my-article"
+
+# All options combined
+nconv md "https://notion.so/My-Page-abc123" -o ./blog -i assets -f "article-1" -v
+```
 
 ## Configuration
 
-Set your Notion authentication tokens in the `.env` file.
+You can configure Notion tokens in two ways:
+
+### 1. Interactive Configuration (Recommended)
+
+Use the interactive mode's `/init` command for a guided setup:
 
 ```bash
-# Create .env file
-cp .env.example .env
+nconv
+nconv> /init
 ```
 
-Edit `.env` and set the following values:
+This will prompt you to enter `TOKEN_V2` and `FILE_TOKEN` with validation.
 
+### 2. Manual Configuration
+
+Run the following command to create the configuration file:
+
+```bash
+nconv init
 ```
-TOKEN_V2=your_token_v2_here
-FILE_TOKEN=your_file_token_here
-```
+
+This creates a `.env` file at `~/.nconv/.env`. Open this file and add your token values.
 
 ### How to Find Notion Tokens
 
-1. Log in to [notion.so](https://notion.so)
-2. Open browser developer tools (F12)
-3. Application > Cookies > notion.so
-4. Copy `token_v2` → paste into `.env` as `TOKEN_V2`
-5. Copy `file_token` → paste into `.env` as `FILE_TOKEN`
+1. Log in to [notion.so](https://notion.so) in your browser.
+2. Open the browser's developer tools (usually F12).
+3. Go to the "Application" tab.
+4. Find the "Cookies" section and select `https://www.notion.so`.
+5. Copy the value of the `token_v2` cookie and paste it into the `TOKEN_V2` field.
+6. Copy the value of the `file_token` cookie and paste it into the `FILE_TOKEN` field.
 
 ## Usage
 
@@ -151,6 +255,7 @@ Image paths inside the Markdown file are converted to relative paths:
 
 * **notion-exporter**: Export Notion pages to Markdown
 * **commander**: CLI command definition and parsing
+* **@inquirer/prompts**: Interactive command-line prompts for TUI
 * **axios**: HTTP client (image downloads)
 * **dotenv**: Environment variable management
 * **chalk**: Terminal output styling
@@ -167,6 +272,9 @@ Image paths inside the Markdown file are converted to relative paths:
 ## Development
 
 ```bash
+# Install dependencies
+npm install
+
 # Development mode (watch files)
 npm run dev
 
@@ -183,18 +291,53 @@ nconv md "https://notion.so/test-page"
 ```text
 nconv/
 ├── src/
-│   ├── index.ts
-│   ├── config.ts
+│   ├── index.ts              # CLI entry point
+│   ├── config.ts             # Configuration management
 │   ├── commands/
-│   │   └── md.ts
+│   │   ├── init.ts           # init command
+│   │   ├── md.ts             # md command
+│   │   └── debug.ts          # debug command
+│   ├── repl/
+│   │   ├── index.ts          # Interactive REPL mode
+│   │   ├── commands.ts       # Slash command handlers
+│   │   └── prompts.ts        # Interactive prompts
 │   ├── core/
-│   │   ├── exporter.ts
-│   │   └── image-processor.ts
+│   │   ├── exporter.ts       # Notion export logic
+│   │   └── image-processor.ts # Image processing
 │   └── utils/
-│       ├── file.ts
-│       └── logger.ts
+│       ├── file.ts           # File utilities
+│       └── logger.ts         # Logging
 ├── bin/
-│   └── nconv.js
+│   └── nconv.js              # Executable
 ├── package.json
 ├── tsconfig.json
 └── tsup.config.ts
+```
+
+## For Developers
+
+If you want to contribute to `nconv-cli`, follow these steps to set up a local development environment.
+
+```bash
+# Clone the repository
+git clone https://github.com/your-username/nconv-cli.git
+cd nconv-cli
+
+# Install dependencies
+npm install
+
+# Link the CLI for local testing
+npm link
+```
+
+The development environment still uses the global configuration file at `~/.nconv/.env`. Ensure you have run `nconv init` and configured your tokens before running local tests.
+
+You can run the CLI in development mode with auto-reloading:
+
+```bash
+# Development mode (watch files)
+npm run dev
+
+# Now you can use the 'nconv' command in a separate terminal
+nconv md "https://notion.so/test-page"
+```
