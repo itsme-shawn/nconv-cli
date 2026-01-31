@@ -2,6 +2,7 @@ import { input, confirm } from '@inquirer/prompts';
 import * as logger from '../utils/logger.js';
 import { mdCommand } from '../commands/md.js';
 import { htmlCommand } from '../commands/html.js';
+import { pdfCommand } from '../commands/pdf.js';
 import { validateConfig } from '../config.js';
 import {
   loadConfig,
@@ -264,6 +265,88 @@ export async function handleHtml(args: string[]): Promise<void> {
 }
 
 /**
+ * Handle /pdf command - Convert Notion page to PDF
+ */
+export async function handlePdf(args: string[]): Promise<void> {
+  let url = '';
+  const options: any = {
+    output: './nconv-output',
+    imageDir: 'images',
+    verbose: false,
+  };
+
+  // Interactive mode (TUI) - step by step prompts
+  if (args.length === 0) {
+    try {
+      // Step 1: URL
+      url = await input({
+        message: 'Notion URL',
+        validate: (value) => {
+          if (!value.trim()) return 'URL is required';
+          if (!value.includes('notion.so') && !value.includes('notion.site')) {
+            return 'Please enter a valid Notion URL';
+          }
+          return true;
+        },
+      });
+
+      // Step 2: Output directory
+      const outputDir = await input({
+        message: 'Output directory [default: ./nconv-output]',
+        default: './nconv-output',
+      });
+      options.output = outputDir;
+
+      // Step 3: Filename (optional, auto-generated if empty)
+      const filename = await input({
+        message: 'Filename [leave empty for auto-generated]',
+        default: '',
+      });
+      if (filename.trim()) {
+        options.filename = filename;
+      }
+
+      // Step 4: Verbose logging
+      options.verbose = await confirm({
+        message: 'Enable verbose logging?',
+        default: false,
+      });
+    } catch (error) {
+      if (error instanceof Error && error.message === 'User force closed the prompt') {
+        logger.warn('\nConversion cancelled.');
+      }
+      return;
+    }
+  } else {
+    // CLI mode - parse arguments
+    url = args[0];
+    const additionalArgs = args.slice(1);
+
+    // Parse options
+    for (let i = 0; i < additionalArgs.length; i++) {
+      const arg = additionalArgs[i];
+      if ((arg === '-o' || arg === '--output') && i + 1 < additionalArgs.length) {
+        options.output = additionalArgs[++i];
+      } else if ((arg === '-f' || arg === '--filename') && i + 1 < additionalArgs.length) {
+        options.filename = additionalArgs[++i];
+      } else if (arg === '-v' || arg === '--verbose') {
+        options.verbose = true;
+      }
+    }
+  }
+
+  // Check if config is valid
+  const configCheck = validateConfig();
+  if (!configCheck.valid) {
+    logger.error('Cannot convert Notion page:');
+    logger.error(configCheck.message || 'Configuration is invalid.');
+    return;
+  }
+
+  await pdfCommand(url, options);
+}
+
+/**
  * Available commands list
  */
 const AVAILABLE_COMMANDS = [
@@ -293,6 +376,15 @@ const AVAILABLE_COMMANDS = [
       '/html https://notion.so/page-id',
       '/html https://notion.so/page-id -o ./blog',
       '/html https://notion.so/page-id -o ./blog -f my-post -v',
+    ],
+  },
+  {
+    name: 'pdf',
+    description: 'Convert Notion page to PDF (renders actual page)',
+    examples: [
+      '/pdf https://notion.so/page-id',
+      '/pdf https://notion.so/page-id -o ./blog',
+      '/pdf https://notion.so/page-id -o ./blog -f my-post -v',
     ],
   },
   {
@@ -352,9 +444,9 @@ export function handleHelp(): void {
   });
 
   console.log('');
-  logger.info('Conversion options (for /md and /html):');
+  logger.info('Conversion options (for /md, /html, and /pdf):');
   logger.info('  -o, --output <dir>      Output directory (default: ./nconv-output)');
-  logger.info('  -i, --image-dir <dir>   Image folder name (default: images)');
+  logger.info('  -i, --image-dir <dir>   Image folder name (default: images) [md/html only]');
   logger.info('  -f, --filename <name>   Output filename');
   logger.info('  -v, --verbose           Enable verbose logging\n');
 
@@ -403,6 +495,10 @@ export async function executeCommand(input: string): Promise<boolean> {
 
     case 'html':
       await handleHtml(args);
+      break;
+
+    case 'pdf':
+      await handlePdf(args);
       break;
 
     case 'help':

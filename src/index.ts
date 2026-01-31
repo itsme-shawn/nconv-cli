@@ -3,6 +3,7 @@
 import { Command } from 'commander';
 import { mdCommand } from './commands/md.js';
 import { htmlCommand } from './commands/html.js';
+import { pdfCommand } from './commands/pdf.js';
 import { debugCommand } from './commands/debug.js';
 import { handler as initHandler } from './commands/init.js';
 import { startRepl } from './repl/index.js';
@@ -48,6 +49,21 @@ program
     await htmlCommand(url, {
       output: options.output,
       imageDir: options.imageDir,
+      filename: options.filename,
+      verbose: options.verbose,
+    });
+  });
+
+program
+  .command('pdf <url>')
+  .description('Convert a Notion page to PDF (renders actual Notion page)')
+  .option('-o, --output <dir>', 'Output directory', './nconv-output')
+  .option('-f, --filename <name>', 'Output filename (without extension or with)')
+  .option('-v, --verbose', 'Enable verbose logging', false)
+  .action(async (url: string, options) => {
+    await pdfCommand(url, {
+      output: options.output,
+      imageDir: 'images', // Not used for PDF, but required by interface
       filename: options.filename,
       verbose: options.verbose,
     });
