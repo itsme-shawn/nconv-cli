@@ -20,3 +20,4 @@ yarn-error.log*
 # Old backend folder
 backend
 stash
+nconv-output

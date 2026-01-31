@@ -4,19 +4,20 @@
 
 # nconv-cli (Notion Convertor CLI)
 
-> A CLI tool that converts Notion pages into blog-ready Markdown  
+> A CLI tool that converts Notion pages into blog-ready Markdown/HTML
 > (with automatic image extraction and path normalization)
 
-nconv-cli converts public Notion pages into Markdown  
-and extracts images into local files, organizing everything  
+nconv-cli converts public Notion pages into Markdown or HTML
+and extracts images into local files, organizing everything
 in a blog-friendly directory structure.
 
 ## Features
 
-- 🚀 Convert public Notion pages into blog-ready Markdown
+- 🚀 Convert public Notion pages into Markdown or HTML
 - 🖼️ Automatically download images and rewrite them as relative paths
 - 📁 Output organized by post-level directory structure
-- 💬 Provides both a slash-command–based interactive TUI (Claude Code–style) and a simple CLI interface.
+- 💬 Provides both a slash-command–based interactive TUI (Claude Code–style) and a simple CLI interface
+- 📄 Multiple output formats: Markdown (.md), HTML (.html)
 
 ## Problems with Existing Notion → Markdown Workflows
 
@@ -93,7 +94,8 @@ nconv>
 |---------|-------------|
 | `/init` | Set up Notion tokens (interactive prompts) |
 | `/config` | View and edit current configuration |
-| `/md <url> [options]` | Convert Notion page to markdown |
+| `/md <url> [options]` | Convert Notion page to Markdown |
+| `/html <url> [options]` | Convert Notion page to HTML |
 | `/help` | Show help information |
 | `/exit` | Exit interactive mode |
 
@@ -109,11 +111,15 @@ nconv> /init
 # View current configuration
 nconv> /config
 
-# Convert a Notion page
+# Convert a Notion page to Markdown
 nconv> /md https://notion.so/My-Page-abc123
+
+# Convert a Notion page to HTML
+nconv> /html https://notion.so/My-Page-abc123
 
 # Convert with options
 nconv> /md https://notion.so/My-Page-abc123 -o ./blog -f my-post
+nconv> /html https://notion.so/My-Page-abc123 -o ./blog -f my-post
 
 # Exit
 nconv> /exit
@@ -129,11 +135,15 @@ nconv> /exit
 # Initialize configuration
 nconv init
 
-# Convert a Notion page (basic)
+# Convert a Notion page to Markdown
 nconv md <notion-url>
+
+# Convert a Notion page to HTML
+nconv html <notion-url>
 
 # Convert with custom options
 nconv md <notion-url> [options]
+nconv html <notion-url> [options]
 ```
 
 ### CLI Options
@@ -148,17 +158,23 @@ nconv md <notion-url> [options]
 ### CLI Examples
 
 ```bash
-# Basic conversion
+# Convert to Markdown (basic)
 nconv md "https://notion.so/My-Page-abc123"
+
+# Convert to HTML
+nconv html "https://notion.so/My-Page-abc123"
 
 # Custom output directory
 nconv md "https://notion.so/My-Page-abc123" -o ./blog-posts
+nconv html "https://notion.so/My-Page-abc123" -o ./blog-posts
 
 # Custom filename
 nconv md "https://notion.so/My-Page-abc123" -f "my-article"
+nconv html "https://notion.so/My-Page-abc123" -f "my-article"
 
 # All options combined
 nconv md "https://notion.so/My-Page-abc123" -o ./blog -i assets -f "article-1" -v
+nconv html "https://notion.so/My-Page-abc123" -o ./blog -i assets -f "article-1" -v
 ```
 
 ## Configuration
@@ -200,26 +216,36 @@ This creates a `.env` file at `~/.nconv/.env`. Open this file and add your token
 ### Basic Usage
 
 ```bash
+# Convert to Markdown
 nconv md <notion-url>
+
+# Convert to HTML
+nconv html <notion-url>
 ```
 
 ### Examples
 
 ```bash
-# Default output (saved to ./output)
+# Convert to Markdown (saved to ./nconv-output)
 nconv md "https://notion.so/My-Page-abc123"
+
+# Convert to HTML
+nconv html "https://notion.so/My-Page-abc123"
 
 # Specify output directory
 nconv md "https://notion.so/My-Page-abc123" -o ./blog-posts
+nconv html "https://notion.so/My-Page-abc123" -o ./blog-posts
 
 # Custom filename
 nconv md "https://notion.so/My-Page-abc123" -f "my-article"
+nconv html "https://notion.so/My-Page-abc123" -f "my-article"
 
 # Verbose logging
 nconv md "https://notion.so/My-Page-abc123" -v
 
 # All options
 nconv md "https://notion.so/My-Page-abc123" -o ./blog -i assets -f "article-1" -v
+nconv html "https://notion.so/My-Page-abc123" -o ./blog -i assets -f "article-1" -v
 ```
 
 ## Options
@@ -233,8 +259,10 @@ nconv md "https://notion.so/My-Page-abc123" -o ./blog -i assets -f "article-1" -
 
 ## Output Structure
 
+**Markdown output:**
+
 ```text
-output/
+nconv-output/
 ├── my-article-folder/
 │   ├── my-article.md
 │   └── images/
@@ -243,10 +271,28 @@ output/
 │       └── ...
 ```
 
-Image paths inside the Markdown file are converted to relative paths:
+**HTML output:**
 
+```text
+nconv-output/
+├── my-article-folder/
+│   ├── my-article.html
+│   └── images/
+│       ├── abc12345.png
+│       ├── def67890.jpg
+│       └── ...
+```
+
+Image paths are converted to relative paths:
+
+**Markdown:**
 ```md
 ![image](./images/abc12345.png)
+```
+
+**HTML:**
+```html
+<img src="./images/abc12345.png" />
 ```
 
 ## Libraries
@@ -296,6 +342,7 @@ nconv/
 │   ├── commands/
 │   │   ├── init.ts           # init command
 │   │   ├── md.ts             # md command
+│   │   ├── html.ts           # html command
 │   │   └── debug.ts          # debug command
 │   ├── repl/
 │   │   ├── index.ts          # Interactive REPL mode

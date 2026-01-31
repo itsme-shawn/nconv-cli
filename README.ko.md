@@ -4,18 +4,19 @@
 
 # nconv-cli (Notion Convertor CLI)
 
-> Notion 글을 블로그에 바로 올릴 수 있는 마크다운으로 변환하는 CLI  
+> Notion 글을 블로그에 바로 올릴 수 있는 Markdown/HTML로 변환하는 CLI
 > (이미지 자동 추출 및 경로 정리 포함)
 
-Notion 퍼블릭 페이지를 마크다운으로 변환하고  
+Notion 퍼블릭 페이지를 Markdown 또는 HTML로 변환하고
 이미지 파일을 로컬로 추출해 블로그 친화적인 구조로 정리해주는 CLI 도구입니다.
 
 ## 특징
 
-- 🚀 Notion 퍼블릭 페이지를 블로그용 마크다운으로 바로 변환
+- 🚀 Notion 퍼블릭 페이지를 Markdown 또는 HTML로 바로 변환
 - 🖼️ 이미지 파일을 로컬로 자동 다운로드 및 상대경로로 변환
 - 📁 게시글 단위로 정리된 출력 디렉토리 구조
 - 💬 슬래시 커맨드 기반 인터랙티브 TUI (Claude Code 스타일) 와 간단한 CLI 인터페이스를 둘 다 제공
+- 📄 다양한 출력 형식: Markdown (.md), HTML (.html)
 
 
 
@@ -92,7 +93,8 @@ nconv>
 |--------|------|
 | `/init` | Notion 토큰 설정 (인터랙티브 입력) |
 | `/config` | 현재 설정 확인 및 수정 |
-| `/md <url> [옵션]` | Notion 페이지를 마크다운으로 변환 |
+| `/md <url> [옵션]` | Notion 페이지를 Markdown으로 변환 |
+| `/html <url> [옵션]` | Notion 페이지를 HTML로 변환 |
 | `/help` | 도움말 표시 |
 | `/exit` | 인터랙티브 모드 종료 |
 
@@ -108,11 +110,15 @@ nconv> /init
 # 현재 설정 확인
 nconv> /config
 
-# Notion 페이지 변환
+# Notion 페이지를 Markdown으로 변환
 nconv> /md https://notion.so/My-Page-abc123
+
+# Notion 페이지를 HTML로 변환
+nconv> /html https://notion.so/My-Page-abc123
 
 # 옵션과 함께 변환
 nconv> /md https://notion.so/My-Page-abc123 -o ./blog -f my-post
+nconv> /html https://notion.so/My-Page-abc123 -o ./blog -f my-post
 
 # 종료
 nconv> /exit
@@ -128,11 +134,15 @@ nconv> /exit
 # 설정 초기화
 nconv init
 
-# Notion 페이지 변환 (기본)
+# Notion 페이지를 Markdown으로 변환
 nconv md <notion-url>
+
+# Notion 페이지를 HTML로 변환
+nconv html <notion-url>
 
 # 커스텀 옵션과 함께 변환
 nconv md <notion-url> [옵션]
+nconv html <notion-url> [옵션]
 ```
 
 ### CLI 옵션
@@ -147,17 +157,23 @@ nconv md <notion-url> [옵션]
 ### CLI 사용 예시
 
 ```bash
-# 기본 변환
+# Markdown으로 변환 (기본)
 nconv md "https://notion.so/My-Page-abc123"
+
+# HTML로 변환
+nconv html "https://notion.so/My-Page-abc123"
 
 # 커스텀 출력 디렉토리
 nconv md "https://notion.so/My-Page-abc123" -o ./blog-posts
+nconv html "https://notion.so/My-Page-abc123" -o ./blog-posts
 
 # 커스텀 파일명
 nconv md "https://notion.so/My-Page-abc123" -f "my-article"
+nconv html "https://notion.so/My-Page-abc123" -f "my-article"
 
 # 모든 옵션 함께 사용
 nconv md "https://notion.so/My-Page-abc123" -o ./blog -i assets -f "article-1" -v
+nconv html "https://notion.so/My-Page-abc123" -o ./blog -i assets -f "article-1" -v
 ```
 
 ## 설정
@@ -199,26 +215,36 @@ nconv init
 ### 기본 사용법
 
 ```bash
+# Markdown으로 변환
 nconv md <notion-url>
+
+# HTML로 변환
+nconv html <notion-url>
 ```
 
 ### 예시
 
 ```bash
-# 기본 사용 (./output 폴더에 저장)
+# Markdown으로 변환 (./nconv-output 폴더에 저장)
 nconv md "https://notion.so/My-Page-abc123"
+
+# HTML로 변환
+nconv html "https://notion.so/My-Page-abc123"
 
 # 출력 디렉토리 지정
 nconv md "https://notion.so/My-Page-abc123" -o ./blog-posts
+nconv html "https://notion.so/My-Page-abc123" -o ./blog-posts
 
 # 커스텀 파일명
 nconv md "https://notion.so/My-Page-abc123" -f "my-article"
+nconv html "https://notion.so/My-Page-abc123" -f "my-article"
 
 # 상세 로그 출력
 nconv md "https://notion.so/My-Page-abc123" -v
 
 # 모든 옵션 사용
 nconv md "https://notion.so/My-Page-abc123" -o ./blog -i assets -f "article-1" -v
+nconv html "https://notion.so/My-Page-abc123" -o ./blog -i assets -f "article-1" -v
 ```
 
 ## 옵션
@@ -233,19 +259,37 @@ nconv md "https://notion.so/My-Page-abc123" -o ./blog -i assets -f "article-1" -
 ## 출력 구조
 
 ```
-output/
+nconv-output/
 ├── my-article-folder/
-    ├── my-article.md          # 마크다운 파일
+    ├── my-article.md          # Markdown 파일
     └── images/
         ├── abc12345.png       # 다운로드된 이미지들
         ├── def67890.jpg
         └── ...
 ```
 
-마크다운 파일 내 이미지 경로는 상대경로로 변환됩니다:
+또는 HTML로 변환 시:
 
+```
+nconv-output/
+├── my-article-folder/
+    ├── my-article.html        # HTML 파일
+    └── images/
+        ├── abc12345.png
+        ├── def67890.jpg
+        └── ...
+```
+
+파일 내 이미지 경로는 상대경로로 변환됩니다:
+
+**Markdown:**
 ```markdown
 ![image](./images/abc12345.png)
+```
+
+**HTML:**
+```html
+<img src="./images/abc12345.png" />
 ```
 
 ## 라이브러리
@@ -291,6 +335,7 @@ nconv/
 │   ├── commands/
 │   │   ├── init.ts           # init 명령어
 │   │   ├── md.ts             # md 명령어
+│   │   ├── html.ts           # html 명령어
 │   │   └── debug.ts          # debug 명령어
 │   ├── repl/
 │   │   ├── index.ts          # 인터랙티브 REPL 모드
