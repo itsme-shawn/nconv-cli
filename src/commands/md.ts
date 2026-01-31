@@ -51,10 +51,6 @@ export async function mdCommand(notionUrl: string, options: ConverterOptions) {
     const pageDir = path.join(config.output, baseFilename);
     await fs.mkdir(pageDir, { recursive: true });
 
-    if (config.verbose) {
-      console.log(`📁 출력 폴더: ${path.relative(process.cwd(), pageDir)}\n`);
-    }
-
     // 4. 이미지 폴더 생성 및 이미지 파일 이동
     const imageOutputDir = path.join(pageDir, config.imageDir);
     await fs.mkdir(imageOutputDir, { recursive: true });
