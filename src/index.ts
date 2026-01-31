@@ -3,6 +3,8 @@
 import { Command } from 'commander';
 import { mdCommand } from './commands/md.js';
 import { debugCommand } from './commands/debug.js';
+import { handler as initHandler } from './commands/init.js';
+import { startRepl } from './repl/index.js';
 
 const program = new Command();
 
@@ -12,9 +14,16 @@ program
   .version('1.0.0');
 
 program
+  .command('init')
+  .description('Create a default .env configuration file')
+  .action(async () => {
+    await initHandler({} as any); // Handler expects argv, but doesn't use it
+  });
+
+program
   .command('md <url>')
   .description('Convert a Notion page to markdown')
-  .option('-o, --output <dir>', 'Output directory', './output')
+  .option('-o, --output <dir>', 'Output directory', './nconv-output')
   .option('-i, --image-dir <dir>', 'Image folder name (relative to output)', 'images')
   .option('-f, --filename <name>', '출력 파일명 (확장자 제외 또는 포함)')
   .option('-v, --verbose', 'Enable verbose logging', false)
@@ -32,7 +41,7 @@ if (process.env.NODE_ENV !== 'production') {
   program
     .command('debug <url>')
     .description('Debug: Output raw markdown and image URLs')
-    .option('-o, --output <dir>', '출력 디렉토리', './output')
+    .option('-o, --output <dir>', '출력 디렉토리', './nconv-output')
     .option('-i, --image-dir <dir>', 'Image folder name', 'images')
     .option('-v, --verbose', 'Enable verbose logging', false)
     .action(async (url: string, options) => {
@@ -45,4 +54,11 @@ if (process.env.NODE_ENV !== 'production') {
     });
 }
 
-program.parse();
+// If no arguments provided, start REPL mode
+(async () => {
+  if (process.argv.length === 2) {
+    await startRepl();
+  } else {
+    program.parse();
+  }
+})();
